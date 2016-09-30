@@ -14,7 +14,7 @@
 #include <ESP8266HTTPClient.h>
 #include <Losant.h>
 
-// WiFi credentials
+// WiFi credentials.
 const char* WIFI_SSID = "my-wifi-ssid";
 const char* WIFI_PASS = "my-wifi-pass";
 
@@ -34,9 +34,7 @@ WiFiClientSecure wifiClient;
 
 LosantDevice device(LOSANT_DEVICE_ID);
 
-/*
-    The set up function will run first and only one time.
- */
+// The set up function will run first and only one time.
 void setup() {
   Serial.begin(115200);
 
@@ -58,10 +56,8 @@ void setup() {
   connect();
 }
 
-/*
-  The loop function will run repeatedly as fast as the microcontroller will
-  allow.
- */
+// The loop function will run repeatedly as fast as the microcontroller will
+// allow.
 void loop() {
   bool toReconnect = false;
 
@@ -95,6 +91,7 @@ void loop() {
   delay(100);
 }
 
+// Triggered when button is pressed
 void buttonPressed() {
   Serial.println("Button Pressed!");
 
@@ -132,6 +129,7 @@ void handleLosantCommand(LosantCommand *command) {
   }
 }
 
+// Connect to WiFI and Losant
 void connect() {
 
   // Connect to Wifi.
@@ -140,11 +138,17 @@ void connect() {
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
 
+  // Workaround to fix wifi connection problems.
+  // See: https://github.com/esp8266/Arduino/issues/2186#issuecomment-228581052
   if (WiFi.status() != WL_CONNECTED) {
+    WiFi.begin(WIFI_SSID, WIFI_PASS);
+  } else {
+    WiFi.disconnect();
     WiFi.begin(WIFI_SSID, WIFI_PASS);
   }
 
   while (WiFi.status() != WL_CONNECTED) {
+    // Failed to find SSID
     if(WiFi.status() == WL_NO_SSID_AVAIL){
       Serial.println();
       Serial.println("Failed to find SSID.");
@@ -153,8 +157,9 @@ void connect() {
       halt();
     }
 
-    // Check to see if
+    // Failed to connect to WIfi
     if (WiFi.status() == WL_CONNECT_FAILED) {
+      Serial.println();
       Serial.println("Failed to connect to WIFI. Please verify credentials: ");
       Serial.println();
       Serial.print("SSID: ");
@@ -178,21 +183,21 @@ void connect() {
   Serial.println();
 
   Serial.print("Authenticating Device...");
+
+  // Use the Losant Auth API to verify device
+  // See: https://docs.losant.com/rest-api/overview/#device-based-authentication
+
   HTTPClient http;
   http.begin("http://api.losant.com/auth/device");
   http.addHeader("Content-Type", "application/json");
   http.addHeader("Accept", "application/json");
 
-  /* Create JSON payload to sent to Losant API
-   *
-   *   {
-   *     "deviceId": "575ecf887ae143cd83dc4aa2",
-   *     "key": "this_would_be_the_key",
-   *     "secret": "this_would_be_the_secret"
-   *   }
-   *
-   */
-
+  // Create JSON payload to sent to Losant API
+  //  {
+  //     "deviceId": "575ecf887ae143cd83dc4aa2",
+  //     "key": "this_would_be_the_key",
+  //     "secret": "this_would_be_the_secret"
+  //   }
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
   root["deviceId"] = LOSANT_DEVICE_ID;
