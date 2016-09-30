@@ -224,8 +224,8 @@ void connect() {
       }
     } else {
         Serial.println("Failed to connect to Losant API.");
+        Serial.printf("Error: %s\n", http.errorToString(httpCode).c_str());
         halt();
-
    }
 
   http.end();
