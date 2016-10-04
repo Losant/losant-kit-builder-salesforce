@@ -104,13 +104,13 @@ void buttonPressed() {
   device.sendState(root);
 }
 
-// Toggle LED on/off
+// Toggle LED on
 void turnLedOn() {
   Serial.println("Turning LED on.");
   digitalWrite(LED_PIN, HIGH);
 }
 
-// Toggle LED on/off
+// Toggle LED off
 void turnLedOff() {
   Serial.println("Turning LED off.");
   digitalWrite(LED_PIN, LOW);
