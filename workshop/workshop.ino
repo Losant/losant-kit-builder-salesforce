@@ -26,7 +26,6 @@ const char* LOSANT_ACCESS_SECRET = "my-access-secret";
 const int BUTTON_PIN = 5;
 const int LED_PIN = 4;
 
-bool ledState = false;
 int buttonState = 0;
 
 // For an unsecure connection to Losant.
@@ -106,10 +105,15 @@ void buttonPressed() {
 }
 
 // Toggle LED on/off
-void toggleLed() {
-  Serial.println("Toggling LED.");
-  ledState = !ledState;
-  digitalWrite(LED_PIN, ledState ? HIGH : LOW);
+void turnLedOn() {
+  Serial.println("Turning LED on.");
+  digitalWrite(LED_PIN, HIGH);
+}
+
+// Toggle LED on/off
+void turnLedOff() {
+  Serial.println("Turning LED off.");
+  digitalWrite(LED_PIN, LOW);
 }
 
 // An Infinite loop to stop the program when an error occurs.
@@ -124,8 +128,11 @@ void handleLosantCommand(LosantCommand *command) {
   Serial.print("Command received: ");
   Serial.println(command->name);
 
-  if(strcmp(command->name, "toggle") == 0) {
-    toggleLed();
+  if(strcmp(command->name, "ledOn") == 0) {
+    turnLedOn();
+  }
+  if(strcmp(command->name, "ledOff") == 0) {
+    turnLedOff();
   }
 }
 
